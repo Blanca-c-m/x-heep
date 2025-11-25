@@ -18,9 +18,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "csr.h"
 
 int main(int argc, char *argv[])
 {
+    // Enable cycle counting
+    CSR_CLEAR_BITS(CSR_REG_MCOUNTINHIBIT, 0x1);
+    // Reset cycle counter
+    CSR_WRITE(CSR_REG_MCYCLE, 0);
     /* write something to stdout */
     printf("hello world!\n");
     return EXIT_SUCCESS;
