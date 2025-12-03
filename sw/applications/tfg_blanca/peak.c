@@ -1,7 +1,7 @@
 #include "peak.h"
 #define MAX_SIGNAL 1024 // MODIFICAR CUANDO SEPA
 
-void first_derivate1(int input[], int output[], int fs, int length){
+void first_derivate(int input[], int output[], int fs, int length){
     output[0] = 0;
     for (int i=1; i < length; i++){
         //output[i] = (input[i] - input[i-1])*fs;
@@ -10,7 +10,7 @@ void first_derivate1(int input[], int output[], int fs, int length){
 
 
 }
-
+//FILTRO ESTADÍSTICO: supera a la "media" FILTRO BINARIO: tiene una altura suficiente
 int peaks(int input[], int length, int fs, int th1, int w1, int th2, int amp, int peaks_index_max[], int peaks_values_max[], int peaks_index_min[], int peaks_values_min[], int *num_max_out, int *num_min_out) {
     // RESUMEN PARA RECORDAR th1: umbral estadístico, w1: tamaño de la ventana, th2: umbral binario, amp: distancia máxima para buscar picos
 
@@ -22,7 +22,7 @@ int peaks(int input[], int length, int fs, int th1, int w1, int th2, int amp, in
     int count_min = 0;
 
 
-    first_derivate1(input, fd, fs, length); // calculo la primera derivada de los valores de la señal y lo almaceno en fd
+    first_derivate(input, fd, fs, length); // calculo la primera derivada de los valores de la señal y lo almaceno en fd
 
     // Quiero saber que signo tienen para estudiar un cambio
     for (int i = 0; i < length - 1; i++) {
@@ -30,9 +30,14 @@ int peaks(int input[], int length, int fs, int th1, int w1, int th2, int amp, in
         else if (fd[i] < 0) fdsign[i] = -1;
         else fdsign[i] = 0;
     }
-
+    
+    for (int i = 1; i < length; i++) {
+    if (fdsign[i] == 0) {
+        fdsign[i] = fdsign[i - 1];
+    }
+}
     //  ESTUDIO SI HA HABIDO CAMBIO DE SIGNO, si lo hay se considera un posible candidato
-    //printf("Detecto posibles candidatos por cambio de signo\n");
+    printf("Detecto posibles candidatos por cambio de signo\n");
 
     for (int i = 1; i < length - 1; i++) {
         if (fdsign[i - 1] > 0 && fdsign[i] < 0) {
@@ -45,8 +50,8 @@ int peaks(int input[], int length, int fs, int th1, int w1, int th2, int amp, in
         }
     }
 
-    // printf("Candidatos a maximo por cambio de signo : %d\n", count_max);
-    // printf("Candidatos a minimo por cambio de signo : %d\n", count_min);
+    printf("Candidatos a maximo por cambio de signo : %d\n", count_max);
+    printf("Candidatos a minimo por cambio de signo : %d\n", count_min);
 
     int first_max[MAX_SIGNAL];
     int first_min[MAX_SIGNAL];
@@ -74,7 +79,7 @@ int peaks(int input[], int length, int fs, int th1, int w1, int th2, int amp, in
 
         threshold = m + (s*th1)/1000; // umbral creada a partir de media y desviacion
 
-        // printf("idx=%d, input=%.3d, mean=%.3d, std=%.3d, thr=%.3d\n", index, input[index], m, s, threshold);
+        printf("idx=%d, input=%.3d, mean=%.3d, std=%.3d, thr=%.3d\n", index, input[index], m, s, threshold);
         
         if (input[index] >= threshold) { // si se supera el umbral propuesto se considera un candidato
             first_max[num_max] = index;
@@ -84,8 +89,8 @@ int peaks(int input[], int length, int fs, int th1, int w1, int th2, int amp, in
     
 
     }
-
-    int temp_signal[MAX_SIGNAL]; for (int i = 0; i < length; i++) temp_signal[i] = -input[i];
+    //MISMO QUE ANTERIOR PERO AHORA PARA MÍNIMOS
+    int temp_signal[MAX_SIGNAL]; for (int i = 0; i < length; i++) temp_signal[i] = -input[i]; 
     for(int i = 0; i < count_min; i++){
         int index = candidate_min[i]; // almaceno el indice de los candidatos que tienen cambio de signo
 
@@ -104,17 +109,16 @@ int peaks(int input[], int length, int fs, int th1, int w1, int th2, int amp, in
         threshold = m + (s*th1)/1000; // umbral creada a partir de media y desviacion
     
        
-        //printf("idx=%d, input=%.3d, mean=%.3d, std=%.3d, thr=%.3d\n", index, input[index], m, s, threshold);
+        printf("idx=%d, input=%.3d, mean=%.3d, std=%.3d, thr=%.3d\n", index, input[index], m, s, threshold);
         
         if (temp_signal[index] >= threshold) { 
             first_min[num_min] = index;
-            //first_min_values[num_min] = input[index]; // mantenemos el valor original
             num_min++;
         }
 
     }
-    // printf("Candidatos para maximos por calculo estadistico : %d\n", num_max);
-    // printf("Candidatos para minimos por calculo estadistico : %d\n", num_min);
+    printf("Candidatos para maximos por calculo estadistico : %d\n", num_max);
+    printf("Candidatos para minimos por calculo estadistico : %d\n", num_min);
 
     fflush(stdout);
 
@@ -133,7 +137,7 @@ int peaks(int input[], int length, int fs, int th1, int w1, int th2, int amp, in
             if (fdsign[m - 1] < 0 && fdsign[m] > 0) { // ha habido cambio de signo en la derivada?
                 prev_min = input[m];
                 found_prev = 1;
-                break;
+                break; // cuando lo encuentre, sale del bucle. Así busco el más cercano
             }
         }
         int next_min = input[index];
@@ -159,7 +163,7 @@ int peaks(int input[], int length, int fs, int th1, int w1, int th2, int amp, in
         }
 
     }
-    // printf("Candidatos por calculo binaria: %d\n", num_peaks_max);
+    printf("Candidatos por calculo binaria: %d\n", num_peaks_max);
     fflush(stdout);
 
     for (int i = 0; i < num_min; i++) {
@@ -199,7 +203,7 @@ int peaks(int input[], int length, int fs, int th1, int w1, int th2, int amp, in
         }
 
     }
-    // printf("Candidatos por calculo binaria: %d\n", num_peaks_min);
+    printf("Candidatos por calculo binaria: %d\n", num_peaks_min);
     fflush(stdout);
 
     *num_max_out = num_peaks_max;
