@@ -1,4 +1,4 @@
-#include "peakmax.h"
+#include "peak.h"
 #define MAX_SIGNAL 1024 // MODIFICAR CUANDO SEPA
 
 int peakmax(int input[], int length, int fs, int th1, int w1, int th2, int amp, int peaks_index[], int peaks_values[]) {
@@ -19,10 +19,14 @@ int peakmax(int input[], int length, int fs, int th1, int w1, int th2, int amp, 
         else if (fd[i] < 0) fdsign[i] = -1;
         else fdsign[i] = 0;
     }
+    for (int i = 1; i < length; i++) {
+        if (fdsign[i] == 0) {
+        fdsign[i] = fdsign[i - 1];
+    }
 
     //  ESTUDIO SI HA HABIDO CAMBIO DE SIGNO, si lo hay se considera un posible candidato
     // AQUÍ SOLO ESTOY ESTUDIANDO MÁXIMOS, TENDRÉ QUE IMPLEMENTAR MÍNIMOS
-    //printf("Detecto posibles candidatos por cambio de signo\n");
+    printf("Detecto posibles candidatos por cambio de signo\n");
 
     for (int i = 1; i < length - 1; i++) {
         if (fdsign[i - 1] > 0 && fdsign[i] < 0) {
@@ -31,7 +35,7 @@ int peakmax(int input[], int length, int fs, int th1, int w1, int th2, int amp, 
         }
     }
 
-    //printf("Candidatos por cambio de signo: %d\n", count_candidate);
+    printf("Candidatos por cambio de signo: %d\n", count_candidate);
 
     int first_candidate[MAX_SIGNAL];
     int num_candidates = 0;
@@ -54,7 +58,7 @@ int peakmax(int input[], int length, int fs, int th1, int w1, int th2, int amp, 
 
         threshold = m + (s* th1)/1000; // umbral creada a partir de media y desviacion
 
-        //printf("idx=%d, input=%.3d, mean=%.3d, std=%.3d, thr=%.3d\n", index, input[index], m, s, threshold);
+        printf("idx=%d, input=%.3d, mean=%.3d, std=%.3d, thr=%.3d\n", index, input[index], m, s, threshold);
         
         if (input[index] >= threshold) { // si se supera el umbral propuesto se considera un candidato
             first_candidate[num_candidates] = index;
@@ -63,7 +67,7 @@ int peakmax(int input[], int length, int fs, int th1, int w1, int th2, int amp, 
     
 
     }
-    //printf("Candidatos por calculo estadistico: %d\n", num_candidates);
+    printf("Candidatos por calculo estadistico: %d\n", num_candidates);
     fflush(stdout);
 
     int num_peaks = 0;
@@ -104,7 +108,7 @@ int peakmax(int input[], int length, int fs, int th1, int w1, int th2, int amp, 
         }
 
     }
-    //printf("Candidatos por calculo binario: %d\n", num_peaks);
+    printf("Candidatos por calculo binario: %d\n", num_peaks);
     fflush(stdout);
     return num_peaks;
 }
