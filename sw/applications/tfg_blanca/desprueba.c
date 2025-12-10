@@ -2,51 +2,6 @@
 #define escala 1000
 
 
-void print_diagonals(long long int diag0[], long long int diag1[], long long int diag_1[], long long int diag2[], long long int diag_2[]) {
-    int N = signal_length;
-    
-    printf("==========================================\n");
-    printf("           VECTORES DIAGONALES (N=%d)      \n", N);
-    printf("==========================================\n");
-
-    printf("\n1. Diagonal Principal (diag0) [0..N-1]:\n");
-    printf("   [ ");
-    for (int i = 0; i < N; i++) {
-        printf("%lld ", diag0[i]);
-    }
-    printf("]\n");
-
-    printf("\n2. Diagonal Superior +1 (diag1) [0..N-2]:\n");
-    printf("   [ ");
-    for (int i = 0; i < N - 1; i++) {
-        printf("%lld ", diag1[i]);
-    }
-    printf("]\n");
-
-    printf("\n3. Diagonal Inferior -1 (diag_1) [1..N-1]:\n");
-    printf("   [ - ");
-    for (int i = 1; i < N; i++) {
-        printf("%lld ", diag_1[i]);
-    }
-    printf("]\n");
-    
-    printf("\n4. Diagonal Superior +2 (diag2) [0..N-3]:\n");
-    printf("   [ ");
-    for (int i = 0; i < N - 2; i++) {
-        printf("%lld ", diag2[i]);
-    }
-    printf("]\n");
-
-    printf("\n5. Diagonal Inferior -2 (diag_2) [2..N-1]:\n");
-    printf("   [ - - ");
-    for (int i = 2; i < N; i++) {
-        printf("%lld ", diag_2[i]);
-    }
-    printf("]\n");
-    
-
-}
-
  
 void build_diagonales(long long int diag0[], long long int diag1[], long long int diag_1[], long long int diag2[], long long int diag_2[], int lambda) {
 
@@ -174,3 +129,4 @@ void solve(long long int diag0[], long long int diag1[], long long int diag2[], 
     }
 
 }
+
