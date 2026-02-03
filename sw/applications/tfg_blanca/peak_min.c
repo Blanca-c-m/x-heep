@@ -1,5 +1,12 @@
 #include "peak.h"
 #define MAX_SIGNAL 1024 // MODIFICAR CUANDO SEPA
+void first_derivate2(int input[], int output[], int fs, int length){
+        output[0] = 0;
+        for (int i=1; i < length; i++){
+            //output[i] = (input[i] - input[i-1])*fs;
+            output[i] = (input[i + 1] - input[i])*fs;
+        }
+}
 
 int peakmin(int input[], int length, int fs, int th1, int w1, int th2, int amp, int peaks_index[], int peaks_values[]) {
     // RESUMEN PARA RECORDAR th1: umbral estadístico, w1: tamaño de la ventana, th2: umbral binario, amp: distancia máxima para buscar picos
@@ -10,9 +17,7 @@ int peakmin(int input[], int length, int fs, int th1, int w1, int th2, int amp, 
     candidate[0] = 0;
     int count_candidate = 0;
 
-
-    first_derivate(input, fd, fs, length); // calculo la primera derivada de los valores de la señal y lo almaceno en fd
-
+    first_derivate2(input, fd, fs, length);
     // Quiero saber que signo tienen para estudiar un cambio
     for (int i = 0; i < length - 1; i++) {
         if (fd[i] > 0) fdsign[i] = 1;
@@ -23,6 +28,8 @@ int peakmin(int input[], int length, int fs, int th1, int w1, int th2, int amp, 
         if (fdsign[i] == 0) {
         fdsign[i] = fdsign[i - 1];
     }
+
+    
 
     //  ESTUDIO SI HA HABIDO CAMBIO DE SIGNO, si lo hay se considera un posible candidato
     // AQUÍ SOLO ESTOY ESTUDIANDO MÁXIMOS, TENDRÉ QUE IMPLEMENTAR MÍNIMOS
@@ -44,30 +51,26 @@ int peakmin(int input[], int length, int fs, int th1, int w1, int th2, int amp, 
     for (int i = 0; i < length; i++) temp_signal[i] = -input[i];
     // PRIMER FILTRO: ESTADÍSTICO
     for(int i = 0; i < count_candidate; i++){
-        int index = candidate[i]; // almaceno el indice de los candidatos que tienen cambio de signo
+        int index = candidate[i]; 
 
         int m = 0, s = 0;
         int threshold = 0;
 
-        // definir ventanas
         int ini = (index - w1 >= 0) ? index - w1 : 0; 
         int fin = (index + w1 < length) ? index + w1 : length - 1;
         int win_len = fin - ini + 1;
 
-        // media y desviacion
         mean(&temp_signal[ini], win_len, &m);
         std(&temp_signal[ini], win_len, &s);
 
-        threshold = m + (s* th1)/1000; // umbral creada a partir de media y desviacion
+        threshold = m + (s * th1) / scale; 
 
-        printf("idx=%d, input=%.3d, mean=%.3d, std=%.3d, thr=%.3d\n", index, input[index], m, s, threshold);
-        
-        if (input[index] >= threshold) { // si se supera el umbral propuesto se considera un candidato
+        // CORRECCIÓN AQUÍ:
+        // Comparamos el valor INVERTIDO contra el UMBRAL INVERTIDO
+        if (temp_signal[index] <= threshold) { 
             first_candidate[num_candidates] = index;
             num_candidates++;
         }
-    
-
     }
     printf("Candidatos por calculo estadistico: %d\n", num_candidates);
     fflush(stdout);
@@ -113,4 +116,4 @@ int peakmin(int input[], int length, int fs, int th1, int w1, int th2, int amp, 
     printf("Candidatos por calculo binario: %d\n", num_peaks);
     fflush(stdout);
     return num_peaks;
-}
+}}
