@@ -1,8 +1,6 @@
 #include "decomposition.h"
 #include <stdlib.h>
 
-// declaro las variables como long long int para mejorar 
-
 void buildD2(long long int D2[signal_length - 2][signal_length], int length){
     for (int i = 0; i < length - 2; i++){
         for (int j = 0; j< length; j++) D2[i][j] = 0;
@@ -154,12 +152,11 @@ int Gauss(long long int sist[signal_length][signal_length + 1], int length){
 
 void decompose_eda(int input[], int length, int tonic[], int phasic[], int lambda){
     
-    long long int D2[length -2][length];
-    long long int D2t[length][length - 2];
-    long long int mat_multiplicada[length][length];
-    long long int mat_A[length][length];
-    long long int sistema[length][length + 1];
-
+    static long long int D2[signal_length -2][signal_length];
+    static long long int D2t[signal_length][signal_length -2];
+    static long long int mat_multiplicada[signal_length][signal_length];
+    static long long int mat_A[signal_length][signal_length];
+    static long long int sistema[signal_length][signal_length + 1];
     // //contruyo cada matriz e imprimo por pantalla para comprobar que se ha hecho bien
     buildD2(D2, length);
     //print_D2(D2, length);
@@ -168,7 +165,7 @@ void decompose_eda(int input[], int length, int tonic[], int phasic[], int lambd
     //print_D2t(D2t, length);
 
     multiplyD2tD2(D2t, D2, mat_multiplicada, length);
-    //print_multiplcar(mat_multiplicada, length);
+    print_multiplcar(mat_multiplicada, length);
 
     buildA(mat_multiplicada, length, lambda, mat_A);
     //print_A(mat_A, length);
@@ -187,17 +184,15 @@ void decompose_eda(int input[], int length, int tonic[], int phasic[], int lambd
     if (Gauss(sistema, length) == 0) {
         for (int i = 0; i < length; i++) {
             tonic[i] = sistema[i][length];        // Tónica (SCL)
-            phasic[i] = input[i] - tonic[i];             // Fásica (SCR)
+            phasic[i] = input[i] - tonic[i];      // Fásica (SCR)
         }
     }
 
-   // printf("\nSISTEMA RESUELTO\n"); 
-   // print_system(sistema, length); 
-   //printf("\nSoluciones (x):\n"); 
     // for (int i = 0; i < length; i++) { 
     //     printf("tonic[%d] = %d\r\n", i, tonic[i]); 
     // }
-    for (int i = 0; i < length; i++) { 
-        printf("phasic[%d] = %d\r\n", i, phasic[i]); 
-    }
+    // for (int i = 0; i < length; i++) { 
+    //     printf("phasic[%d] = %d\r\n", i, phasic[i]); 
+    // }
 }
+
