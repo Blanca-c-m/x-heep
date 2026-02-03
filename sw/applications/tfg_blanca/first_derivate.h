@@ -1,6 +1,3 @@
 #include <math.h>
-#include "signal_EDA.h"
-
-
-
+#include <stdio.h>
 void first_derivate(int input[], int output[], int fs, int length);
