@@ -1,5 +1,12 @@
 #include "peak.h"
 #define MAX_SIGNAL 1024 // MODIFICAR CUANDO SEPA
+void first_derivate3(int input[], int output[], int fs, int length){
+        output[0] = 0;
+        for (int i=1; i < length; i++){
+            //output[i] = (input[i] - input[i-1])*fs;
+            output[i] = (input[i + 1] - input[i])*fs;
+        }
+}
 
 int peakmax(int input[], int length, int fs, int th1, int w1, int th2, int amp, int peaks_index[], int peaks_values[]) {
     // RESUMEN PARA RECORDAR th1: umbral estadístico, w1: tamaño de la ventana, th2: umbral binario, amp: distancia máxima para buscar picos
@@ -11,7 +18,7 @@ int peakmax(int input[], int length, int fs, int th1, int w1, int th2, int amp, 
     int count_candidate = 0;
 
 
-    first_derivate(input, fd, fs, length); // calculo la primera derivada de los valores de la señal y lo almaceno en fd
+    first_derivate3(input, fd, fs, length); // calculo la primera derivada de los valores de la señal y lo almaceno en fd
 
     // Quiero saber que signo tienen para estudiar un cambio
     for (int i = 0; i < length - 1; i++) {
@@ -56,7 +63,7 @@ int peakmax(int input[], int length, int fs, int th1, int w1, int th2, int amp, 
         mean(&input[ini], win_len, &m);
         std(&input[ini], win_len, &s);
 
-        threshold = m + (s* th1)/1000; // umbral creada a partir de media y desviacion
+        threshold = m + (s* th1)/scale; // umbral creada a partir de media y desviacion
 
         printf("idx=%d, input=%.3d, mean=%.3d, std=%.3d, thr=%.3d\n", index, input[index], m, s, threshold);
         
@@ -111,4 +118,5 @@ int peakmax(int input[], int length, int fs, int th1, int w1, int th2, int amp, 
     printf("Candidatos por calculo binario: %d\n", num_peaks);
     fflush(stdout);
     return num_peaks;
-}
+}}
+
