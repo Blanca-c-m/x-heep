@@ -1,10 +1,12 @@
 #include "mean.h"
-
-
 void mean(int input[], int length, int *output){
-    int mean=0;
-    for (int i=0; i < length; i++ ){ //int i=0; i <= length; i++
-        mean += input[i];
+
+    int acc = 0;
+
+    for (int i = 0; i < length; i++ ){ 
+        acc += input[i];
     }
-   *output = mean/length;
+
+   *output = (acc * INV_N) >> 14;
+
 }
