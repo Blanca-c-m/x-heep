@@ -1,6 +1,5 @@
-#include "signal_EDA.h"
+#include "signal_EDA_shift.h" 
 
-
-void build_diagonales(long long int diag0[], long long int diag1[], long long int diag_1[], long long int diag2[], long long int diag_2[],  int lambda);
-void print_diagonals(long long int diag0[], long long int diag1[], long long int diag_1[], long long int diag2[], long long int diag_2[]);
-void solve(long long int diag0[], long long int diag1[], long long int diag2[], long long int diag_1[], long long int diag_2[],long long int b[], long long int x[], long long int ph[]);
+void build_diagonales_v1(int diag0[], int diag1[], int diag_1[], int diag2[], int diag_2[], int lambda);
+void print_diagonals_v1(int diag0[], int diag1[], int diag_1[], int diag2[], int diag_2[]);
+void solve_v1(int diag0[], int diag1[], int diag2[], int diag_1[], int diag_2[], int b[], int x[], int ph[]);
