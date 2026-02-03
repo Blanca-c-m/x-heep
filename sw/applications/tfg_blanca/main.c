@@ -276,7 +276,7 @@ int main(void){
             case OPCION_PSD:
                 FFT_CooleyTukey(signal, resultado_fft);
                 for (int i = 0; i < 15; i++) {
-                    printf("Bin %03d | %15.2f | %15.2f\n", i, resultado_fft[i].re, resultado_fft[i].im);
+                    printf("Bin %d | %f | %f\n", i, resultado_fft[i].re, resultado_fft[i].im);
                 }
                 calcular_psd10(resultado_fft, bandas_potencia);
                 for (int i = 0; i < 10; i++) {
